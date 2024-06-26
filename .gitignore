@@ -128,3 +128,35 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# Arquivos gerados pelo Python
+*.pyc
+__pycache__/
+
+# Ambiente virtual Python (por exemplo, virtualenv, venv)
+venv/
+env/
+
+# Arquivos de log
+*.log
+
+# Arquivos de cache
+*.cache
+
+# Arquivos de build
+*.egg-info/
+dist/
+build/
+
+# Arquivos de configuração de IDEs
+.idea/
+.vscode/
+
+# Arquivos de dependências gerados
+pip-log.txt
+requirements.txt
+
+# Outros arquivos temporários
+*.swp
+*~

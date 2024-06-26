@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package example;
+
+service MessageService {
+    rpc SendMessages(stream Message) returns (Message);
+    rpc GetMessage(MessageFilter) returns (Message);
+}
+
+message Message {
+    int32 id = 1;
+    string category = 2;
+    string content = 3;
+}
+
+message MessageResponse {
+    string status = 1;
+}
+
+message MessageFilter {
+    string filter = 1;
+}

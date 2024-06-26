@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  cockroachdb1:
+    image: cockroachdb/cockroach:v24.1.1
+    container_name: cockroachdb1
+    command: start --insecure --join=cockroachdb1,cockroachdb2,cockroachdb3
+    volumes:
+      - cockroachdb1-data:/cockroach/cockroach-data
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+    networks:
+      - cockroachdb-net
+
+  cockroachdb2:
+    image: cockroachdb/cockroach:v24.1.1
+    container_name: cockroachdb2
+    command: start --insecure --join=cockroachdb1,cockroachdb2,cockroachdb3
+    volumes:
+      - cockroachdb2-data:/cockroach/cockroach-data
+    ports:
+      - "8081:8080"
+    networks:
+      - cockroachdb-net
+
+  cockroachdb3:
+    image: cockroachdb/cockroach:v24.1.1
+    container_name: cockroachdb3
+    command: start --insecure --join=cockroachdb1,cockroachdb2,cockroachdb3
+    volumes:
+      - cockroachdb3-data:/cockroach/cockroach-data
+    ports:
+      - "8082:8080"
+    networks:
+      - cockroachdb-net
+
+  cockroach-init:
+    image: cockroachdb/cockroach:v24.1.1
+    container_name: cockroach-init
+    depends_on:
+      - cockroachdb1
+      - cockroachdb2
+      - cockroachdb3
+    entrypoint: ["sh", "-c", "cockroach init --insecure --host=cockroachdb1"]
+    networks:
+      - cockroachdb-net
+
+volumes:
+  cockroachdb1-data:
+  cockroachdb2-data:
+  cockroachdb3-data:
+
+networks:
+  cockroachdb-net:
+    driver: bridge
