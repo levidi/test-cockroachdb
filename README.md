@@ -1,82 +1,68 @@
+# Passos obrigatórios
+
+- Passo 1 - Subir o cluster cockroachDB
+
+```sh
+docker-compose up
+```
+
+- Passo 2 - Conectar ao cluster
+
+```sh
 cockroach sql --insecure --host=localhost
+```
 
--- Conecte-se ao cluster como administrador (geralmente "root" ou outro superusuário)
-\c root
+- Passo 3 - Criar o database
 
--- Crie o banco de dados
+```sql
 CREATE DATABASE mydb;
+```
 
--- Conecte-se ao banco de dados específico
-use mydb;
+- Passo 4 - Acessar o banco
 
-<!-- CREATE TABLE messages (
-    id INT PRIMARY KEY,
-    category STRING,
-    content TSVECTOR
-); -->
+```sql
+USE mydb;
+```
 
+- Passo 5 - Criar a tabela
+
+```sql
 CREATE TABLE messages (
     id INT PRIMARY KEY,
     category STRING,
     content STRING
 );
+```
 
--- Criar um índice de texto completo na coluna content usando to_tsvector com o idioma português do Brasil
-CREATE INDEX idx_content_gin ON messages USING GIN (to_tsvector('portuguese', content)); ok for TEXT or String
+- Passo 6 - Iniciar o server
 
-SELECT id, category, content
-FROM messages
-WHERE content @@ to_tsquery('portuguese', 'inovação');
+```sh
+cd server && npm i && node index.js
+```
 
-<!-- CREATE INDEX idx_content_btree ON messages (content) STORING (category); -->
+---
 
-<!-- CREATE INDEX idx_message_content_gin ON messages USING GIN (content); --> ok for TSVECTOR or TEXT[]
+# Passos adicionais
 
-<!-- CREATE INDEX idx_content_fulltext ON messages USING GIN (to_tsvector('portuguese_unaccent', content)); -->
+- Testar o client node.js
 
-SHOW INDEX FROM messages;
+```sh
+cd client && npm i && node index.js
+```
 
-<!-- SELECT content FROM messages@idx_content_fulltext WHERE content='contemporâneo'; -->
+- Testar o client python
 
-CREATE INDEX idx_content_fulltext ON messages
-USING GIN (to_tsvector('portuguese_unaccent', content));
+```sh
+cd client-python && python client.py
+```
 
-EXPLAIN ANALYZE
-SELECT id, content
-FROM messages
-WHERE to_tsvector('portuguese', content) @@ to_tsquery('portuguese', 'jesus');
+# Passos secundários
 
--- Inserir dados na tabela 'messages'
-INSERT INTO messages (id, category, content)
-    VALUES  (1, 'test', 'Primeiro registro para realização da consulta do tipo full text search'),
-            (2, 'test', 'Segundo registro do teste full text search');
+- Passo 1 - Criar o índice
 
-select id, category, to_tsvector('portuguese', content) from messages;
-
-SELECT * FROM messages;
-
-DELETE FROM messages WHERE id > 0;
-
-DROP TABLE messages;
-
-SELECT
-    n.nspname AS schema_name,
-    c.relname AS table_name,
-    i.relname AS index_name,
-    pg_catalog.pg_get_indexdef(i.oid) AS index_def
-FROM
-    pg_catalog.pg_class c
-JOIN
-    pg_catalog.pg_index x ON c.oid = x.indrelid
-JOIN
-    pg_catalog.pg_class i ON i.oid = x.indexrelid
-JOIN
-    pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-WHERE
-    c.relkind = 'r' -- 'r' = ordinary table
-ORDER BY
-    n.nspname,
-    c.relname,
-    i.relname;
-
-EXPLAIN ANALYZE SELECT * FROM messages WHERE content ILIKE '%esus%';
+```sql
+CREATE INDEX idx_content_gin 
+    ON messages 
+    USING GIN (to_tsvector('portuguese_unaccent', content)
+);
+```

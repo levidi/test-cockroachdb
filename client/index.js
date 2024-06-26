@@ -31,11 +31,8 @@ function sendMessages() {
       console.error('Error reading file:', err);
       return;
     }
-
-    // console.info(data)
     const message = { id: 4, category: "sigiloso", content: data };
   
-    // console.info(message)
     call.write(message);
       
     call.end();
@@ -45,14 +42,13 @@ function sendMessages() {
 
 function getMessages() {
 
-  const payload = { filter: "social" }; // Filtro fixo para teste
+  const payload = { filter: "social" };
 
   client.getMessage(payload, (err, response) => {
     if (err) {
       console.error('Error:', err.message);
       return;
     }
-
 
     console.log('Messages:');
     console.log(response);
@@ -61,4 +57,4 @@ function getMessages() {
 }
 
 sendMessages();
-getMessages();
+// getMessages();

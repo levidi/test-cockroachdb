@@ -99,12 +99,7 @@ function getMessage(call, callback) {
         return;
       }
   
-    //   const query = {
-    //     text: 'SELECT id, category, content FROM messages WHERE content ILIKE $1',
-    //     values: [`%${filter}%`]
-    //   };
       const query = `SELECT id, category, content FROM messages WHERE content ILIKE '%${filter}%'`
-
 
       client.query(query, (err, result) => {
         release();

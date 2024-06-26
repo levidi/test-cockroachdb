@@ -11,15 +11,10 @@ def send_messages():
             data = file.read()
 
 
-        for i in range(1, 2001):
+        for i in range(1, 101):
             message = message_pb2.Message(id=i, category="sigiloso", content=data)
             response = stub.SendMessages(iter([message]))
             print(f'Response {i + 1}:', response)
-
-        # message = message_pb2.Message(id=4, category="sigiloso", content=data)
-
-        # response = stub.SendMessages(iter([message]))
-        # print('Response:', response)
 
 def get_messages():
     with grpc.insecure_channel('localhost:50051') as channel:
