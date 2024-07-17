@@ -26,5 +26,5 @@ def get_messages():
         print('Messages:', response)
 
 if __name__ == '__main__':
-    send_messages()
-    # get_messages()
+    # send_messages()
+    get_messages()

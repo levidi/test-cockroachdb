@@ -16,8 +16,15 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 
 const exampleProto = grpc.loadPackageDefinition(packageDefinition).example;
 
+function decodeUnicodeEscapes(input) {
+  return input.replace(/\\u([\dA-F]{4})/gi, (match, grp) => {
+    return String.fromCharCode(parseInt(grp, 16));
+  });
+}
+
 const pool = new Pool({
-  connectionString: DB_CONNECTION_STRING
+  connectionString: DB_CONNECTION_STRING,
+  charset: 'utf8'
 });
 
 function sendMessages(call, callback) {
@@ -40,7 +47,10 @@ function sendMessages(call, callback) {
         console.info("write message");
         console.info(msg.id)
         console.info(msg.category)
-        const escapedContent = msg.content
+
+        const decodedContent = decodeUnicodeEscapes(msg.content);
+        
+        const escapedContent = decodedContent
             .replace(/\\/g, '')
             .replace(/\n/g, ' ')
             .replace(/\t/g, ' ')
@@ -127,5 +137,5 @@ function getMessage(call, callback) {
 const server = new grpc.Server();
 server.addService(exampleProto.MessageService.service, { sendMessages, getMessage });
 server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), () => {
-  console.log('Server running at http://127.0.0.1:50051');
+  console.log('Server running at 0.0.0.0:50051');
 });
